@@ -7,6 +7,7 @@ var SEED = require('../config/config').SEED;
 var app = express();
 var Usuario = require('../models/usuario');
 
+
 app.post('/', (req, res) => {
 
     var body = req.body;
@@ -21,23 +22,23 @@ app.post('/', (req, res) => {
             });
         }
 
-        if (!usuarioDB) {
-            return res.status(400).json({
-                ok: false,
-                mensaje: 'Credenciales incorrectas - email',
-                errors: err
+        // if (!usuarioDB) {
+        //     return res.status(400).json({
+        //         ok: false,
+        //         mensaje: 'Credenciales incorrectas - email',
+        //         errors: err
 
-            });
-        }
+        //     });
+        // }
         //Verifico la contrasena, regresa true or false
-        if (!bcrypt.compareSync(body.password, usuarioDB.password)) {
-            //Si no machean las credenciales
-            return res.status(400).json({
-                ok: false,
-                mensaje: 'Credenciales incorrectas - password',
-                errors: err
-            });
-        }
+        // if (!bcrypt.compareSync(body.password, usuarioDB.password)) {
+        //     //Si no machean las credenciales
+        //     return res.status(400).json({
+        //         ok: false,
+        //         mensaje: 'Credenciales incorrectas - password',
+        //         errors: err
+        //     });
+        // }
         // Crear un token!!
         usuarioDB.password = ':)';
         var token = jwt.sign({ usuario: usuarioDB }, SEED, { expiresIn: 14400 });
@@ -49,7 +50,7 @@ app.post('/', (req, res) => {
 
         });
 
-    })
+    });
 
 });
 

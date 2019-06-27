@@ -15,7 +15,12 @@ var Usuario = require('../models/usuario');
 // ==========================================
 app.get('/', (req, res, next) => {
 
+    var desde = req.query.desde || 0;
+    desde = Number(desde);
+
     Usuario.find({}, 'nombre email img role')
+        .skip(desde)
+        .limit(2)
         .exec(
             (err, usuarios) => {
 
@@ -26,22 +31,24 @@ app.get('/', (req, res, next) => {
                         errors: err
                     });
                 }
+                Usuario.count({}, (err, conteo) => {
+                    res.status(200).json({
+                        Ok: true,
+                        Usuarios: usuarios,
+                        'Total Usuarios en BD': conteo
 
-                res.status(200).json({
-                    ok: true,
-                    usuarios: usuarios
+                    });
+
                 });
-
-
 
             });
 });
 
 
-
 // ==========================================
 // Actualizar usuario
 // ==========================================
+
 app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
     var id = req.params.id;
@@ -85,7 +92,11 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
             res.status(200).json({
                 ok: true,
-                usuario: usuarioGuardado
+                usuario: usuarioGuardado,
+                // el req.usuario lo saque del decoded
+                //que hice en el middleware, y gracias al next
+                // puedo continuar con el codigo
+                usuariotoken: req.usuario
             });
 
         });
@@ -132,7 +143,6 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
     });
 
 });
-
 
 // ============================================
 //   Borrar un usuario por el id
